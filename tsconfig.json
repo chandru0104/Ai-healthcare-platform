@@ -4,12 +4,6 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/Ai-heathcare-platform-e2e"
-    },
-    {
-      "path": "./apps/Ai-heathcare-platform"
-    },
-    {
       "path": "./apps/client-e2e"
     },
     {
@@ -29,6 +23,12 @@
     },
     {
       "path": "./apps/user-service"
+    },
+    {
+      "path": "./libs/shared/utils"
+    },
+    {
+      "path": "./apps/utils"
     }
   ]
 }

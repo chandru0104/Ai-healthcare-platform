@@ -16,6 +16,10 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2022",
-    "customConditions": ["@ai-heathcare-platform/source"]
+    "customConditions": ["@ai-heathcare-platform/source"],
+"paths": {
+  "@shared/utils": ["libs/shared/utils/src/index.ts"]
+},
+    "baseUrl": "."
   }
 }

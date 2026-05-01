@@ -1,14 +1,40 @@
-import express from 'express';
+import express from "express"
+import { limit } from "../src/rateLimit/rate-limiter"
+import {authMiddleware} from "../src/authMiddleware/auth"
+import { createProxyMiddleware } from "http-proxy-middleware"
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3000;
+const app = express()
 
-const app = express();
+app.use(limit)
 
-app.get('/', (req, res) => {
-  res.send({ message: 'Hello API' });
-});
+const authProxy= createProxyMiddleware({
+      changeOrigin:true,
+      target : process.env.AUTH_URL as string,
+      pathRewrite:{
+          "^/api/auth":" "
+      }
+})
 
-app.listen(port, host, () => {
-  console.log(`[ ready ] http://${host}:${port}`);
-});
+const userProxy = createProxyMiddleware({
+  changeOrigin:true,
+  target : process.env.USER_URL as string,
+  pathRewrite:{
+    "^/api/user" : " "
+  }
+})
+
+app.use("/",(req,res)=>{
+  res.json({
+    message:`API gateway runnig in ${process.env.PROT}`
+  })
+})
+
+app.use("/api/auth",authProxy)
+app.use("/api/user",authMiddleware,userProxy)
+
+
+app.listen(process.env.PROT,()=>{
+  console.log(`API gateway runnig in ${process.env.PROT}`)
+})
+
+
