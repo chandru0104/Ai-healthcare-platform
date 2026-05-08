@@ -12,19 +12,50 @@ const userModel = new mongoose.Schema({
     password:{
         type:String,
         select:false,
-        require:true
+        required:[true,"password is require"]
     },
     role:{
          type:String,
          enum: ["user", "doctor", "delivery boy", "admin"],
-         require:true
+         required:[true,"role is require"]
     },
     profile:{
         type:String
+    },
+    experience:String,
+    licence_no:String,
+    degree:String,
+    about:String,
+    specialist:String,
+    registration:String,
+    phone:Number,
+    location:String,
+    price:Number,
+    comment:String,
+    star:String,
+    schedule:{
+        type:[String],
+        default:[]
+    },
+    language:{
+        type:[String],
+        default:[]
+    },
+    is_active:{
+        default:1,
+        type:Number
+    },
+    status:{
+        default:1,
+        type:Number
+    },
+    createdBy:{
+        type:mongoose.Schema.Types.ObjectId,
+    },
+    updatedBy:{
+        type:mongoose.Schema.Types.ObjectId,
     }
-
-
-})
+},{ timestamps:true})
 
 
 export const User =mongoose.model("User",userModel)

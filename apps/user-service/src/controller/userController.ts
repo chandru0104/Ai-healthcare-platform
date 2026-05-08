@@ -1,28 +1,118 @@
 
-import { validationError } from "../errorHandler/errorHandler"
-import {createUser} from "../services/userServices"
+import { validationError } from "../utils/errorHandler"
+import { userAddService, userAllListService, userDeleteService, userProfileService, userUpdateService } from "../services/userServices"
+import { Request, Response } from "express"
 
-export const userServices = async(req:any,res:any)=>{
-    try{
-    const {email,password}=req.body
+export const userAddController = async (req: Request, res: Response) => {
+    try {
+        const { email, password, role, profile, experience, licence_no, degree, specialist, about, registration, phone, location, language,price,comment,star,schedule } = req.body
 
-    if(!email && !password){
-       throw new validationError("Must fill the Require feild")
-    }
+        if (!email || !password || !role) {
+            throw new validationError("Must fill the require feild")
+        }
 
+        if (role === "doctor") {
+            if (!profile || !experience || !licence_no || !degree || !specialist || !about || !registration || !phone || !location || !language||!price||!comment||!star||!schedule) {
+                throw new validationError("Must fill the require feild")
+            }
+        }
+        const user = await userAddService(req.body)
 
-     
-    const user = await createUser(req.body)
-
-    res.status(201).json ({
-        success:true,
-        data:user
-    })
-    }catch(error:any){
+        res.status(201).json({
+            success: true,
+            data: user
+        })
+    } catch (error: any) {
         res.status(400).json({
-            success:false,
-            mesaage:error.message
+            success: false,
+            mesaage: error.message
         })
     }
+}
 
+
+export const userListController = async (req: Request, res: Response) => {
+
+    try {
+        const user = await userAllListService()
+
+        res.status(200).json({
+            success: true,
+            message: "User listed successfully",
+            data: user
+        })
+
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+            
+        })
+    }
+}
+
+
+export const userDeleteController = async (req: Request, res: Response) => {
+
+    try {
+        const { id } = req.params   
+
+        if (!id) {
+            throw new validationError("Please select user")
+        }
+
+        await userDeleteService(id)
+
+        res.status(200).json({
+            success: true,
+            message: "User deleted"
+           
+        })
+
+
+    } catch (error: any) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+            
+        })
+
+    }
+
+}
+
+export const userProfileController = async (req: Request, res: Response) => {
+
+    try {
+        const { id } = req.params
+        if (!id) {
+            throw new validationError("Invalid user")
+        }
+        const user = await userProfileService(id)
+        res.status(200).json({
+            success: true,
+            message: "user profile",
+            data: user,
+        })
+    } catch (error: any) {
+        throw new validationError(error.message)
+    }
+}
+
+
+export const userUpdateController = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params
+        const data = req.body
+
+        const updatedData = await userUpdateService(id, data)
+
+        res.status(201).json({
+            success: true,
+            message: "User data updated",
+            data: updatedData
+        })
+    } catch (error: any) {
+        throw new validationError(error.message)
+    }
 }
