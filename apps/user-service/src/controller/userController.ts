@@ -3,6 +3,7 @@ import { validationError } from "../utils/errorHandler"
 import { userAddService, userAllListService, userDeleteService, userProfileService, userUpdateService } from "../services/userServices"
 import { Request, Response } from "express"
 
+//user add
 export const userAddController = async (req: Request, res: Response) => {
     try {
         const { email, password, role, experience, licence_no, degree, specialist, about, registration, phone, location, language,fees,schedule } = req.body
@@ -16,10 +17,7 @@ export const userAddController = async (req: Request, res: Response) => {
                 throw new validationError("Must fill the require feild")
             }
         }
-        const user = await userAddService({
-    ...req.body,
-    file: req.file
-})
+        const user = await userAddService({...req.body,file: req.file})
 
         res.status(201).json({
             success: true,
@@ -33,7 +31,7 @@ export const userAddController = async (req: Request, res: Response) => {
     }
 }
 
-
+//user list
 export const userListController = async (req: Request, res: Response) => {
 
     try {
@@ -54,7 +52,7 @@ export const userListController = async (req: Request, res: Response) => {
     }
 }
 
-
+//user delete
 export const userDeleteController = async (req: Request, res: Response) => {
 
     try {
@@ -84,6 +82,7 @@ export const userDeleteController = async (req: Request, res: Response) => {
 
 }
 
+//user profile
 export const userProfileController = async (req: Request, res: Response) => {
 
     try {
@@ -102,7 +101,7 @@ export const userProfileController = async (req: Request, res: Response) => {
     }
 }
 
-
+///user update
 export const userUpdateController = async (req: Request, res: Response) => {
     try {
         const { id } = req.params

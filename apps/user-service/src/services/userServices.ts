@@ -6,6 +6,7 @@ import cloudinary from "../utils/cloudinary"
 
 env.config()
 
+//add user service
 export const userAddService = async (data: any) => {
 
         const { name, email, password, role, experience, licence_no, degree, specialist, about, registration, phone, location, language,fees,comment,star,schedule } = data
@@ -48,9 +49,8 @@ export const userAddService = async (data: any) => {
                 
         }
     
-
         const doctor = await User.create({ name, email, password: hashPassword, role, profile : profileImage, experience, licence_no, degree, specialist, about, registration, phone, location, language,fees,comment,star,schedule })
-       const responseUser = await User.findById(doctor._id).select("-password -__v")
+        const responseUser = await User.findById(doctor._id).select("-password -__v")
         return responseUser
         }
 
@@ -58,20 +58,17 @@ export const userAddService = async (data: any) => {
 
 }
 
-
+//user all list services
 export const userAllListService = async (): Promise<any> => {
         try {
                 const user = await User.find({ status: 1 })
-
-                
                 return user
         } catch (error: any) {
                 throw new validationError(error.message)
         }
-
-
 }
 
+//user delete services
 export const userDeleteService = async (id: any) => {
         try {
                 const deleteUser = await User.findByIdAndUpdate(id, { status: 0 }, { new: true })
@@ -81,6 +78,8 @@ export const userDeleteService = async (id: any) => {
         }
 }
 
+
+//user profile services
 export const userProfileService = async (id: any) => {
         try {
                 const UserProfile = await User.findById(id)
@@ -91,7 +90,7 @@ export const userProfileService = async (id: any) => {
 
 }
 
-
+//user update services
 export const userUpdateService = async (id: any, data: any) => {
         try {
         const updateData = await User.findByIdAndUpdate(id, data, { new: true, runValidators: true })

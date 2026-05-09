@@ -3,7 +3,7 @@ import {userAddController,userListController,userDeleteController,userProfileCon
 import {uploader} from "../utils/multer"
 const router = Router()
 
-
+//register api 
 router.post("/api/register",uploader.single("profile"),userAddController)
 router.get("/api/user",userListController)
 router.get("/api/user/profile/:id",userProfileController)
