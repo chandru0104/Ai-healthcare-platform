@@ -30,7 +30,7 @@ const userModel = new mongoose.Schema({
     registration:String,
     phone:Number,
     location:String,
-    price:Number,
+    fees:Number,
     comment:String,
     star:String,
     schedule:{

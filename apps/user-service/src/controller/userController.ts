@@ -5,18 +5,21 @@ import { Request, Response } from "express"
 
 export const userAddController = async (req: Request, res: Response) => {
     try {
-        const { email, password, role, profile, experience, licence_no, degree, specialist, about, registration, phone, location, language,price,comment,star,schedule } = req.body
+        const { email, password, role, experience, licence_no, degree, specialist, about, registration, phone, location, language,fees,schedule } = req.body
 
         if (!email || !password || !role) {
             throw new validationError("Must fill the require feild")
         }
 
         if (role === "doctor") {
-            if (!profile || !experience || !licence_no || !degree || !specialist || !about || !registration || !phone || !location || !language||!price||!comment||!star||!schedule) {
+            if (!email || !password || !role||!req.file || !experience || !licence_no || !degree || !specialist || !about || !registration || !phone || !location || !language||!fees||!schedule) {
                 throw new validationError("Must fill the require feild")
             }
         }
-        const user = await userAddService(req.body)
+        const user = await userAddService({
+    ...req.body,
+    file: req.file
+})
 
         res.status(201).json({
             success: true,

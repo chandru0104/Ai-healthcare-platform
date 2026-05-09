@@ -2,13 +2,13 @@ import { User } from "../models/userModel"
 import bcrypt from "bcrypt"
 import env from "dotenv"
 import { validationError } from "../utils/errorHandler"
-import cloudinary from "cloudinary"
+import cloudinary from "../utils/cloudinary"
 
 env.config()
 
 export const userAddService = async (data: any) => {
 
-        const { name, email, password, role, profile, experience, licence_no, degree, specialist, about, registration, phone, location, language,price,comment,star,schedule } = data
+        const { name, email, password, role, experience, licence_no, degree, specialist, about, registration, phone, location, language,fees,comment,star,schedule } = data
 
         const salt = 10
 
@@ -36,18 +36,22 @@ export const userAddService = async (data: any) => {
 
                 return resposneAdmin
         }
-
+         
         if(role=="doctor"){
-
-        const doctor = await User.create({ name, email, password: hashPassword, role, profile, experience, licence_no, degree, specialist, about, registration, phone, location, language,price,comment,star,schedule })
-
-        if(data.file){
-                const fileUpload = cloudinary.uploader.upload(data.file.path),{
+                let profileImage=""
+             if(data.file){
+                const fileUpload = await cloudinary.uploader.upload(data.file.path,{
                       folder :"profile",
                 }
+        )
+        profileImage=fileUpload.secure_url
+                
         }
+    
 
-        return doctor
+        const doctor = await User.create({ name, email, password: hashPassword, role, profile : profileImage, experience, licence_no, degree, specialist, about, registration, phone, location, language,fees,comment,star,schedule })
+       const responseUser = await User.findById(doctor._id).select("-password -__v")
+        return responseUser
         }
 
         throw new Error("Invalid user")
@@ -58,6 +62,8 @@ export const userAddService = async (data: any) => {
 export const userAllListService = async (): Promise<any> => {
         try {
                 const user = await User.find({ status: 1 })
+
+                
                 return user
         } catch (error: any) {
                 throw new validationError(error.message)
