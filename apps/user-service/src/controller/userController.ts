@@ -1,7 +1,19 @@
 
 import { validationError } from "../utils/errorHandler"
-import { userAddService, userAllListService, userDeleteService, userProfileService, userUpdateService } from "../services/userServices"
+import { userAddService, userAllListService, userDeleteService, userProfileService, userUpdateService,otpSet } from "../services/userServices"
 import { Request, Response } from "express"
+
+
+
+export const otpSetController = async (req:Request, res: Response)=>{
+    
+   const result = await otpSet({...req.body})
+   res.json({
+    success :true,
+    message:"send otp",
+     result
+   })
+}
 
 //user add
 export const userAddController = async (req: Request, res: Response) => {
@@ -17,6 +29,7 @@ export const userAddController = async (req: Request, res: Response) => {
                 throw new validationError("Must fill the require feild")
             }
         }
+        
         const user = await userAddService({...req.body,file: req.file})
 
         res.status(201).json({

@@ -3,20 +3,57 @@ import bcrypt from "bcrypt"
 import env from "dotenv"
 import { validationError } from "../utils/errorHandler"
 import cloudinary from "../utils/cloudinary"
+import {redis} from "../utils/redis"
 
 env.config()
+
+
+export const otpSet = async (data:any)=>{
+
+        const {email,passowrd }=data
+
+        if(!email ||passowrd){
+                throw new validationError("Fill require filed")
+        }
+        const otp = Math.floor(100000 + Math.random()*900000).toString()
+        const hashOtp =await bcrypt.hash(otp,10)
+
+        await redis.setex(
+                `email:${email}`,
+                300,
+                JSON.stringify({
+                        email,
+                        otp:hashOtp,
+                })
+               
+        )
+
+}
 
 //add user service
 export const userAddService = async (data: any) => {
 
-        const { name, email, password, role, experience, licence_no, degree, specialist, about, registration, phone, location, language,fees,comment,star,schedule } = data
+        const { name, email, password, role, experience,userOtp, licence_no, degree, specialist, about, registration, phone, location, language,fees,comment,star,schedule } = data
 
         const salt = 10
 
         const hashPassword = await bcrypt.hash(password, salt)
+       
+                 
 
         if(role=="user"){
-                const user = await User.create({ name, email, password: hashPassword, role })
+
+                const getOtp :any =await redis.get(`email:${email}`)
+                if(!getOtp){
+                        throw new Error("Expired OTP")
+                }
+
+                const verify  =await bcrypt.compare(userOtp,getOtp.otp)
+
+                if(!verify ){
+                 throw new Error("Invalid OTP")
+                }
+            const user = await User.create({ name, email, password: hashPassword, role })
                 const responseUser= await User.findById(user._id).select("-language -schedule -password -__v")
 
                 return responseUser
@@ -24,6 +61,8 @@ export const userAddService = async (data: any) => {
         }
 
         if(role=="delivery boy"){
+                               
+
                 const deliver_boy = await User.create({name, email, password: hashPassword, role})
 
                 const response_deliver_boy = await User.findById(deliver_boy._id).select("-language -schedule -password -__v")
@@ -32,6 +71,7 @@ export const userAddService = async (data: any) => {
 
 
         if(role=="admin"){
+
                 const admin = await User.create({name,email,password: hashPassword ,role})
                 const resposneAdmin = await User.findById(admin._id).select("-language -schedule -password -__v  ")
 
@@ -39,6 +79,7 @@ export const userAddService = async (data: any) => {
         }
          
         if(role=="doctor"){
+     
                 let profileImage=""
              if(data.file){
                 const fileUpload = await cloudinary.uploader.upload(data.file.path,{
