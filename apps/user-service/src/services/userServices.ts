@@ -64,6 +64,17 @@ export const userAddService = async (data: any) => {
         }
 
         if (role == "delivery boy") {
+                const getOtp: any = await redis.get(`email:${email}`)
+                if (!getOtp) {
+                        throw new Error("Expired OTP")
+                }
+
+                const verify = await bcrypt.compare(userOtp, getOtp.otp)
+
+                if (!verify) {
+                        throw new Error("Invalid OTP")
+                }
+                await redis.del(`email:${email}`)
 
 
                 const deliver_boy = await User.create({ name, email, password: hashPassword, role })
@@ -74,6 +85,17 @@ export const userAddService = async (data: any) => {
 
 
         if (role == "admin") {
+                const getOtp: any = await redis.get(`email:${email}`)
+                if (!getOtp) {
+                        throw new Error("Expired OTP")
+                }
+
+                const verify = await bcrypt.compare(userOtp, getOtp.otp)
+
+                if (!verify) {
+                        throw new Error("Invalid OTP")
+                }
+                await redis.del(`email:${email}`)
 
                 const admin = await User.create({ name, email, password: hashPassword, role })
                 const resposneAdmin = await User.findById(admin._id).select("-language -schedule -password -__v  ")
@@ -82,6 +104,17 @@ export const userAddService = async (data: any) => {
         }
 
         if (role == "doctor") {
+                const getOtp: any = await redis.get(`email:${email}`)
+                if (!getOtp) {
+                        throw new Error("Expired OTP")
+                }
+
+                const verify = await bcrypt.compare(userOtp, getOtp.otp)
+
+                if (!verify) {
+                        throw new Error("Invalid OTP")
+                }
+                await redis.del(`email:${email}`)
 
                 let profileImage = ""
                 if (data.file) {
